@@ -2,24 +2,12 @@ package com.example.bettertimetoseeyou
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
-    // -----------------------------
-    // onCreate: punto de entrada
-    // -----------------------------
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // setContentView si usas un layout XML. Ejemplo:
-        // setContentView(R.layout.activity_main)
-
-        // Puedes llamar aquí a las funciones para probarlas:
-        recorreNumeros()
-        println("SumaHasta(10): ${sumaHasta(10)}")
-        println("SumaHasta2(10): ${sumaHasta2(10)}")
-        println("SumaHasta3(10): ${sumaHasta3(10)}")
-        println("Tipo número 0: ${tipoNumero(0)}")
-    }
 
     // --------------------------------
     // Función para comprobar si un nº es par
@@ -84,4 +72,30 @@ class MainActivity : AppCompatActivity() {
             else -> "Positivo"
         }
     }
+
+    private fun procesaLista(lista: List<Int>, criterio: (Int) -> Boolean) : List<Int> =
+        lista.filter(criterio)
+
+
+
+    override fun onCreate(savedInstanceState: Bundle?){
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val tvTitulo = findViewById<TextView>(R.id.tvTitulo)
+        val etEntrada = findViewById<EditText>(R.id.etEntrada)
+        val btnProcesar = findViewById<Button>(R.id.btnProcesar)
+        val tvResultado = findViewById<TextView>(R.id.tvResultado)
+
+        tvTitulo.text = "KOTLIN DEMO"
+
+
+
+
+
+
+    }
+
+
+
 }
