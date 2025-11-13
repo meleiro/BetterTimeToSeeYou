@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/teal_200"
+    android:fitsSystemWindows="true"
     android:padding="16dp">
 
     <TextView
@@ -15,9 +16,7 @@
         android:textSize="22sp"
         android:textColor="#000000"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="0dp" />
+
 
     <EditText
         android:id="@+id/etEntrada"
@@ -39,7 +38,25 @@
         android:id="@+id/btnIrSegunda"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ir a segunda actividad" />
+        android:text="Ir a segunda actividad"
+        android:layout_marginTop="12dp"/>
+
+
+    <Button
+        android:id="@+id/btnCargarPrediccion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cargar Predicción"
+        android:layout_marginTop="12dp"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvHoras"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
 
     <TextView
         android:id="@+id/tvResultado"
