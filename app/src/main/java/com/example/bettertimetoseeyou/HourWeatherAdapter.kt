@@ -78,4 +78,14 @@ class HourWeatherAdapter(
     }
 
 
+    override  fun getItemCount(): Int = items.size
+
+
+    fun submitList(newItems: List<HourWeather>){
+        items.clear()
+        items.addAll(newItems)
+        notifyDataSetChanged()
+    }
+
+
 }

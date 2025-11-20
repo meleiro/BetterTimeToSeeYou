@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.bettertimetoseeyou.model.HourWeather
 
 /**
  * MainActivity:
@@ -91,9 +94,38 @@ class MainActivity : AppCompatActivity() {
         val btnProcesar  = findViewById<Button>(R.id.btnProcesar)
         val tvResultado  = findViewById<TextView>(R.id.tvResultado)
         val btnIrSegunda = findViewById<Button>(R.id.btnIrSegunda)
+        val btnCargar = findViewById<Button>(R.id.btnCargarPrediccion)
+        val rv = findViewById<RecyclerView>(R.id.rvHoras)
 
         // Texto inicial en la parte superior
         tvTitulo.text = "KOTLIN DEMO"
+
+
+        val adapter = HourWeatherAdapter()
+
+        rv.layoutManager = LinearLayoutManager(this)
+
+        rv.adapter = adapter
+
+        btnCargar.setOnClickListener {
+
+            val datos = listOf(
+                HourWeather ("9:00", 18, R.drawable.ic_nublado),
+                HourWeather ("10:00", 19, R.drawable.ic_nublado),
+                HourWeather ("11:00", 22, R.drawable.ic_sol)
+
+            )
+            adapter.submitList(datos)
+
+
+
+
+        }
+
+
+
+
+
 
         // ---------------------------------------------------------------
         // BOTÓN: Ir a la segunda Activity
