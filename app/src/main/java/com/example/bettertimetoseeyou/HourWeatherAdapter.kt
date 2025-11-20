@@ -50,7 +50,7 @@ class HourWeatherAdapter(
         val view = LayoutInflater
             .from(parent.context) // Usamos el contexto del RecyclerView
             .inflate(
-                R.layout.item_hour,  // El layout XML que define UNA FILA
+                R.layout.activity_hour,  // El layout XML que define UNA FILA
                 parent,              // El padre donde vivirá esta vista (RecyclerView)
                 false                // false → NO añadir al padre todavía (lo hace RecyclerView)
             )
