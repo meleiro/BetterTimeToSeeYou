@@ -116,10 +116,6 @@ class MainActivity : AppCompatActivity() {
 
             )
             adapter.submitList(datos)
-
-
-
-
         }
 
 
