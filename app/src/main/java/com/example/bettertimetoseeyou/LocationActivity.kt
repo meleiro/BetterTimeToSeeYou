@@ -85,7 +85,7 @@ class LocationActivity : AppCompatActivity(), LocationListener {
     // --------------------------------------------------------------------
     // startLocationUpdates: activa el GPS para recibir coordenadas
     // --------------------------------------------------------------------
-    @Suppress("MissingPermission")   // Ya comprobamos permiso antes
+    @Suppress("MissingPermission")
     private fun startLocationUpdates() {
         tvStatus.text = "Esperando localización..."
 
