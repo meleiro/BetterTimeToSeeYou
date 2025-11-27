@@ -61,26 +61,6 @@ class LocationActivity : AppCompatActivity(), LocationListener {
         }
     }
 
-    // --------------------------------------------------------------------
-    // Se ejecuta cuando el usuario responde al cuadro de permisos
-    // --------------------------------------------------------------------
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == locationRequestCode &&
-            grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
-            // Permiso concedido
-            startLocationUpdates()
-        } else {
-            tvStatus.text = "Permiso DENEGADO"
-        }
-    }
 
     // --------------------------------------------------------------------
     // startLocationUpdates: activa el GPS para recibir coordenadas
