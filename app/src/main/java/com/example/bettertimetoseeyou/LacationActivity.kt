@@ -12,7 +12,7 @@ class LacationActivity  : AppCompatActivity(), LocationListener {
     private lateinit var tvStatus: TextView
     private lateinit var locationManager: LocationManager
 
-    private val LOCATION_REQUEST_CODE = 1001
+    private val locationRequestCode = 1001
 
     //ONCREATE
 
