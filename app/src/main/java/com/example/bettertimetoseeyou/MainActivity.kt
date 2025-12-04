@@ -95,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         val tvResultado  = findViewById<TextView>(R.id.tvResultado)
         val btnIrSegunda = findViewById<Button>(R.id.btnIrSegunda)
         val btnCargar = findViewById<Button>(R.id.btnCargarPrediccion)
+        val btnGPS = findViewById<Button>(R.id.btnGPS)
         val rv = findViewById<RecyclerView>(R.id.rvHoras)
 
         // Texto inicial en la parte superior
@@ -177,4 +178,7 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
+
+
 }

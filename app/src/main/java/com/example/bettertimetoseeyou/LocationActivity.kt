@@ -83,8 +83,45 @@ class LocationActivity : AppCompatActivity(), LocationListener {
     // --------------------------------------------------------------------
 
 
+    override fun onLocationChanged(location: Location) {
+
+        var lat = location.latitude;
+        var lon = location.longitude;
+
+        tvLatLon.text = "Latitud: $lat\nLongitud: $lon"
+        tvStatus.text = "Localización recibida"
+
+        Toast.makeText(this, "Localización recibida", Toast.LENGTH_SHORT).show()
+
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String?>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == locationRequestCode &&
+            grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+            ) {
+
+            startLocationUpdates();
+        } else {
+            tvStatus.text = "Permisos de localización DENEGADO"
+            Toast.makeText(this, "Permisos de localización DENEGADO", Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
     // --------------------------------------------------------------------
     // Cuando la Activity se destruye, paramos el GPS
     // --------------------------------------------------------------------
 
+
+    override fun onDestroy() {
+        super.onDestroy()
+        locationManager.removeUpdates(this)
+    }
 }
