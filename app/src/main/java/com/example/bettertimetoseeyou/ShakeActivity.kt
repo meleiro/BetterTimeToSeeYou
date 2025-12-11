@@ -1,5 +1,7 @@
 package com.example.bettertimetoseeyou
-// Paquete donde está esta Activity. Sirve para organizar el código dentro del proyecto.
+// Paquete donde está esta Activity. Sirve para organizar y agrupar el código
+// dentro de la estructura del proyecto Android. Facilita localizar clases y evita
+// conflictos de nombres.
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -8,184 +10,158 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.selects.SelectInstance
 import kotlin.math.abs
 import kotlin.math.sqrt
 
 // ---------------------------------------------------------------------
 // ShakeActivity
 // ---------------------------------------------------------------------
-// - Es una Activity (pantalla) que además implementa SensorEventListener.
-// - SensorEventListener obliga a implementar métodos como onSensorChanged.
-// - El objetivo principal es:
-//      * Leer los datos del acelerómetro.
-//      * Calcular cuánta "agitación" tiene el móvil.
-//      * Mostrar esa intensidad y un texto descriptivo en pantalla.
+// Esta Activity:
+//   - Muestra en pantalla la intensidad con la que se agita el móvil.
+//   - Implementa SensorEventListener para poder "escuchar" los datos
+//     del acelerómetro y reaccionar cuando cambian.
+//   - Procesa los datos X, Y, Z del acelerómetro para calcular cuánto
+//     se mueve el dispositivo y clasifica el "nivel" de movimiento.
 // ---------------------------------------------------------------------
 class ShakeActivity : AppCompatActivity(), SensorEventListener {
 
-    // TextView que mostrará el valor numérico de la intensidad de agitación.
-    // Ej: 0.52, 3.40, etc.
+    // TextView donde se mostrará la intensidad de la agitación
+    // en formato numérico (ej.: 1.25, 3.80…).
     private lateinit var tvShakeValue : TextView
 
-    // TextView que mostrará un texto indicando el "nivel" de esa agitación.
-    // Ej: "quieto", "suave", "medio", "depravado" (muy fuerte).
+    // TextView donde se muestra un nivel interpretado:
+    // "quieto", "suave", "medio", "depravado".
     private lateinit var tvShakeLevel : TextView
 
-    // SensorManager es el "jefe" de los sensores del dispositivo.
-    // A través de él accedemos al acelerómetro, giroscopio, etc.
+    // SensorManager es la clase responsable de gestionar los sensores
+    // del dispositivo (acelerómetro, giroscopio, luz, proximidad, etc.).
     private lateinit var sensorManager : SensorManager
 
-    // Referencia al propio sensor de acelerómetro.
-    // Puede ser null en caso de que el dispositivo no tenga ese sensor.
+    // Objeto que representa el sensor acelerómetro del dispositivo.
+    // Puede ser null si el móvil no tiene acelerómetro.
     private var accelerometer: Sensor? = null
 
     // -----------------------------------------------------------------
-    // Variables para calcular intensidad de agitación
+    // Variables usadas para calcular la intensidad del movimiento
     // -----------------------------------------------------------------
-    // lastAcceleration: valor de la aceleración en la lectura anterior.
+
+    // Almacena la aceleración del sensor en la actualización anterior.
     private var lastAcceleration = 0f
 
-    // currentAcceleration: valor de la aceleración en la lectura actual.
+    // Almacena la aceleración actual.
     private var currentAcceleration = 0f
 
-    // shakeIntensity: medida de cuánto ha cambiado la aceleración
-    // entre una lectura y la siguiente. Esa "diferencia" la usamos
-    // como indicador de la fuerza de agitación.
+    // Valor final calculado de cuánta agitación hay.
+    // Lo calculamos como la diferencia entre la aceleración actual
+    // y la aceleración anterior.
     private var shakeIntensity = 0f
 
-
-    override fun onCreate(savedInstanceState: Bundle?){
-
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shake)
 
+        // Vinculación de los TextView definidos en el XML.
         tvShakeValue = findViewById(R.id.tvShakeValue)
         tvShakeLevel = findViewById(R.id.tvShakeLevel)
 
+        // Obtenemos el SensorManager del sistema para acceder a los sensores.
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
 
+        // Obtenemos el acelerómetro del dispositivo.
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
+        // Inicializamos los valores de aceleración con la gravedad terrestre (~9.8).
+        // Esto sirve para que la primera comparación no dé resultados exagerados.
         currentAcceleration = SensorManager.GRAVITY_EARTH
         lastAcceleration = SensorManager.GRAVITY_EARTH
-
     }
-
-
-
 
     // -----------------------------------------------------------------
     // onSensorChanged
     // -----------------------------------------------------------------
-    // Se ejecuta AUTOMÁTICAMENTE cada vez que un sensor registrado
-    // (en este caso el acelerómetro) tiene nuevos datos.
+    // Este método se ejecuta automáticamente cada vez que llega una nueva
+    // lectura del sensor registrado.
     //
-    // - 'evento' contiene toda la información de la lectura del sensor:
-    //     * tipo de sensor (acelerómetro, etc.)
-    //     * valores en los ejes X, Y, Z
+    // 'evento' contiene:
+    //   - Qué sensor disparó el evento.
+    //   - Un array de floats con las lecturas en los ejes X, Y, Z.
     // -----------------------------------------------------------------
     override fun onSensorChanged(evento: SensorEvent) {
 
-        // Comprobamos que el evento proviene del acelerómetro.
-        // (Podríamos tener varios sensores activos a la vez.)
+        // Verificamos que el evento pertenece al acelerómetro.
         if (evento.sensor.type == Sensor.TYPE_ACCELEROMETER){
 
-            // ---------------------------------------------------------
-            // 1) Leemos los valores del acelerómetro en los 3 ejes.
-            // ---------------------------------------------------------
-            // El acelerómetro devuelve la aceleración en cada eje X, Y, Z.
-            // Normalmente incluye la gravedad (~9.8 m/s²) en alguno de ellos.
+            // 1) Lectura de los valores del acelerómetro en X, Y, Z.
             val x = evento.values[0]
             val y = evento.values[1]
             val z = evento.values[2]
 
-            // ---------------------------------------------------------
-            // 2) Calculamos el módulo de la aceleración total.
-            // ---------------------------------------------------------
-            // Fórmula del módulo de un vector 3D:
-            //      |a| = sqrt(x^2 + y^2 + z^2)
+            // 2) Cálculo de la aceleración total usando el módulo del vector:
+            //      |a| = sqrt( x² + y² + z² )
             //
-            // Esto nos da una única cifra de “cuánta aceleración hay”
-            // combinando los 3 ejes.
-            val acceleration = sqrt( x * x + y * y + z * z )
+            // Esto convierte tres valores independientes en una sola magnitud.
+            val acceleration = sqrt(x * x + y * y + z * z)
 
-            // ---------------------------------------------------------
-            // 3) Guardamos la lectura anterior y la nueva
-            // ---------------------------------------------------------
-            // Lo que nos interesa no es solo la aceleración en sí,
-            // sino cuánto HA CAMBIADO respecto a la lectura anterior.
+            // 3) Guardamos la lectura anterior y la sustituimos por la nueva.
             lastAcceleration = currentAcceleration
             currentAcceleration = acceleration
 
-            // ---------------------------------------------------------
-            // 4) Calculamos la diferencia entre aceleración actual y anterior
-            // ---------------------------------------------------------
+            // 4) Delta = diferencia entre la lectura actual y la anterior.
+            // El valor absoluto sirve para evitar negativos.
             val delta = currentAcceleration - lastAcceleration
-
-            // Usamos el valor absoluto, porque nos interesa la magnitud
-            // del cambio, no si ha subido o bajado.
             shakeIntensity = abs(delta)
 
-            // ---------------------------------------------------------
-            // 5) Mostramos la intensidad numérica en pantalla
-            // ---------------------------------------------------------
-            // String.format("%.2f", shakeIntensity) → 2 decimales.
-            // Ej: 0.56, 3.10, 7.89
+            // 5) Mostramos la intensidad numérica con dos decimales.
             tvShakeValue.text = String.format("%.2f", shakeIntensity)
 
-            // ---------------------------------------------------------
-            // 6) Interpretamos la intensidad con un texto descriptivo
-            // ---------------------------------------------------------
-            // Usamos una expresión 'when' (similar a un switch) para
-            // clasificar el nivel según el valor de shakeIntensity.
+            // 6) Clasificamos el nivel de agitación según el valor obtenido.
             val levelText = when {
-                // Menos de 1 → casi sin movimiento.
-                shakeIntensity < 1f -> "Nivel: quieto"
-
-                // Entre 1 y 3 → se mueve un poco.
-                shakeIntensity < 3f -> "Nivel: suave"
-
-                // Entre 3 y 6 → agitación media.
-                shakeIntensity < 6f -> "Nivel: medio"
-
-                // Más de 6 → estamos diciendo que es un movimiento muy fuerte.
-                else -> "Nivel: depravado"
-                // (Aquí podrías cambiar el texto a "fuerte" o "muy fuerte"
-                // si quieres algo más neutro para clase.)
+                shakeIntensity < 1f -> "Nivel: quieto"    // Casi sin movimiento
+                shakeIntensity < 2f -> "Nivel: suave"     // Movimiento leve
+                shakeIntensity < 4f -> "Nivel: medio"     // Movimiento moderado
+                else -> "Nivel: depravado"                // Movimiento muy fuerte
             }
 
-            // Asignamos el texto calculado al TextView que muestra el nivel.
+            // Mostramos el texto interpretado en pantalla.
             tvShakeLevel.text = levelText
-
-        } // fin del if (es acelerómetro)
-
-    } // fin de onSensorChanged
-
-
-    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-
-    }
-
-
-    override fun onResume() {
-       super.onResume()
-        accelerometer?.also { sensor ->
-            sensorManager.registerListener(
-                this,
-                sensor,
-                SensorManager.SENSOR_DELAY_UI
-
-            )
-
         }
     }
 
+    // -----------------------------------------------------------------
+    // onAccuracyChanged
+    // -----------------------------------------------------------------
+    // Método requerido por SensorEventListener.
+    // No lo usamos aquí, pero debe existir.
+    // -----------------------------------------------------------------
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) { }
+
+    // -----------------------------------------------------------------
+    // onResume
+    // -----------------------------------------------------------------
+    // Cuando la Activity vuelve a estar visible:
+    //   → Registramos el listener para empezar a recibir datos del sensor.
+    // -----------------------------------------------------------------
+    override fun onResume() {
+        super.onResume()
+
+        accelerometer?.also { sensor ->
+            sensorManager.registerListener(
+                this,                        // Listener (esta Activity)
+                sensor,                      // Sensor a escuchar
+                SensorManager.SENSOR_DELAY_UI // Frecuencia adecuada para UI
+            )
+        }
+    }
+
+    // -----------------------------------------------------------------
+    // onPause
+    // -----------------------------------------------------------------
+    // Cuando la Activity deja de estar en primer plano:
+    //   → Dejamos de escuchar el sensor.
+    // Esto ahorra batería y evita lecturas innecesarias.
+    // -----------------------------------------------------------------
     override fun onPause(){
         super.onPause()
         sensorManager.unregisterListener(this)
     }
-
-
-
 }
