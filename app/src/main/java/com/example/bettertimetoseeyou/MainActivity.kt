@@ -95,6 +95,8 @@ class MainActivity : AppCompatActivity() {
         val tvResultado  = findViewById<TextView>(R.id.tvResultado)
         val btnIrSegunda = findViewById<Button>(R.id.btnIrSegunda)
         val btnCargar = findViewById<Button>(R.id.btnCargarPrediccion)
+        val btnShake: Button = findViewById(R.id.btnShake)
+        val btnGPS: Button = findViewById(R.id.btnGPS)
 
         val rv = findViewById<RecyclerView>(R.id.rvHoras)
 
@@ -176,10 +178,17 @@ class MainActivity : AppCompatActivity() {
             tvResultado.text = salida
         }
 
-        val btnGPS: Button = findViewById(R.id.btnGPS)
+
 
         btnGPS.setOnClickListener {
             val intent = Intent(this, LocationActivity::class.java)
+            startActivity(intent)
+        }
+
+
+
+        btnShake.setOnClickListener {
+            val intent = Intent(this, ShakeActivity::class.java)
             startActivity(intent)
         }
 

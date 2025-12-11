@@ -5,8 +5,10 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.selects.SelectInstance
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -51,6 +53,26 @@ class ShakeActivity : AppCompatActivity(), SensorEventListener {
     // entre una lectura y la siguiente. Esa "diferencia" la usamos
     // como indicador de la fuerza de agitación.
     private var shakeIntensity = 0f
+
+
+    override fun onCreate(savedInstanceState: Bundle?){
+
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_shake)
+
+        tvShakeValue = findViewById(R.id.tvShakeValue)
+        tvShakeLevel = findViewById(R.id.tvShakeLevel)
+
+        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+
+        currentAcceleration = SensorManager.GRAVITY_EARTH
+        lastAcceleration = SensorManager.GRAVITY_EARTH
+
+    }
+
+
 
 
     // -----------------------------------------------------------------
@@ -139,5 +161,31 @@ class ShakeActivity : AppCompatActivity(), SensorEventListener {
         } // fin del if (es acelerómetro)
 
     } // fin de onSensorChanged
+
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+
+    }
+
+
+    override fun onResume() {
+       super.onResume()
+        accelerometer?.also { sensor ->
+            sensorManager.registerListener(
+                this,
+                sensor,
+                SensorManager.SENSOR_DELAY_UI
+
+            )
+
+        }
+    }
+
+    override fun onPause(){
+        super.onPause()
+        sensorManager.unregisterListener(this)
+    }
+
+
 
 }

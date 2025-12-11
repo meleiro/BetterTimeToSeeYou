@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:textSize="22sp"
         android:layout_marginBottom="16dp"
-        android:text="TextView" />
+        android:text="Intensidad del vicio" />
 
     <TextView
         android:id="@+id/tvShakeValue"
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:textSize="22sp"
         android:layout_marginBottom="16dp"
-        android:text="TextView" />
+        android:text="0.0" />
 
     <TextView
         android:id="@+id/tvShakeLevel"
@@ -28,5 +28,5 @@
         android:layout_height="wrap_content"
         android:textSize="22sp"
         android:layout_marginBottom="16dp"
-        android:text="TextView" />
+        android:text="Nivel: quieto" />
 </LinearLayout>
